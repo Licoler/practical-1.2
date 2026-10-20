@@ -1,14 +1,13 @@
+
 const sequelize = require('./database');
 const Author = require('./models/Author');
 const Book = require('./models/Book');
 
-// Один автор может иметь несколько книг.
 Author.hasMany(Book, {
   foreignKey: 'authorId',
   as: 'books',
 });
 
-// Каждая книга принадлежит одному автору.
 Book.belongsTo(Author, {
   foreignKey: 'authorId',
   as: 'author',
@@ -43,6 +42,22 @@ async function main() {
 
     const booksCount = await author.countBooks();
     console.log(`Количество книг автора: ${booksCount}`);
+
+    const authorsTable = await Author.findAll({
+      attributes: ['id', 'name', 'country'],
+      raw: true,
+    });
+
+    console.log('\nТаблица Author:');
+    console.table(authorsTable);
+
+    const booksTable = await Book.findAll({
+      attributes: ['id', 'title', 'year', 'genre', 'authorId'],
+      raw: true,
+    });
+
+    console.log('\nТаблица Book:');
+    console.table(booksTable);
 
     const authors = await Author.findAll({
       include: [
